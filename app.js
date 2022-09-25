@@ -8,18 +8,22 @@ const app = express();
 const connectToDb = require('./db/connection');
 
 // Routes
-const {authRoutes} = require('./routes')
+const {authRoutes, jobRoutes} = require('./routes');
 
 // middleware
-const {errorHandler, notFound} = require('./middleware');
+const {errorHandler, notFound, authentication} = require('./middleware');
+const helmet = require('helmet');
+const xss = require('xss-clean');
 
 app.get('/', (req, res) => {
     res.send('Hello world')
 })
 
 app.use(express.json());
-
+app.use(helmet());
+app.use(xss());
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/jobs', authentication, jobRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

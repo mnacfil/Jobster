@@ -18,7 +18,15 @@ const register = async (req, res) => {
     // create token, so that front end can use for some other request
     const token = user.createJWT();
     // send response, with the user && token
-    res.status(StatusCodes.CREATED).json({user, token});
+    res.status(StatusCodes.CREATED).json({
+        user: {
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            location: user.location,
+            token
+        }
+    });
 }
 
 const login = async (req, res) => {
@@ -42,7 +50,16 @@ const login = async (req, res) => {
     // create token, this will use by front end for future request
     const token = user.createJWT();
     // send response, Succesful message
-    res.status(StatusCodes.OK).json({msg: `Welcome back ${user.name}!`});
+    res.status(StatusCodes.OK).json({
+        user: {
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            location: user.location,
+            token
+        },
+        msg: `Welcome back ${user.name}!`
+    });
 }
 
 const updateProfile = async (req, res) => {
@@ -53,6 +70,7 @@ const updateProfile = async (req, res) => {
     }
     // find user in database
     const user = await User.findOne({email});
+    
     user.name = name;
     user.lastName = lastName;
     user.email = email;
@@ -62,7 +80,7 @@ const updateProfile = async (req, res) => {
     await user.save();
     // create new token
     const token = user.createJWT();
-
+    // send response
     res.status(StatusCodes.OK).json({
         user: {
             name: user.name,
